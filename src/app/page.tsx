@@ -37,7 +37,6 @@ export default function Page(): JSX.Element {
 
   const blockExplorerUrl = `https://explorer.burnt.com/xion-testnet-1/tx/${executeResult?.transactionHash}`;
 
-  // Fetch the count from the smart contract
   async function getCount() {
     setLoading(true);
     try {
@@ -117,7 +116,7 @@ export default function Page(): JSX.Element {
       );
       setExecuteResult(res);
       console.log("Transaction successful:", res);
-      await getCount(); // Refresh count after successful increment
+      await getCount();
     } catch (error) {
       console.error("Error executing transaction:", error);
     } finally {
@@ -154,7 +153,7 @@ export default function Page(): JSX.Element {
 
       setExecuteResult(res);
       console.log("Transfer successful:", res);
-      await getMyTokenCount(); // Refresh token count after successful transfer
+      await getMyTokenCount();
     } catch (error) {
       console.error("Error executing transfer:", error);
     } finally {
@@ -162,7 +161,6 @@ export default function Page(): JSX.Element {
     }
   }
 
-  // Fetch count on page load
   useEffect(() => {
     if (queryClient) {
       getCount();
