@@ -1,4 +1,5 @@
 "use client";
+
 import Link from "next/link";
 import { useState, useEffect, JSX } from "react";
 import {
@@ -12,8 +13,7 @@ import { Button } from "@burnt-labs/ui";
 import "@burnt-labs/ui/dist/index.css";
 import type { ExecuteResult } from "@cosmjs/cosmwasm-stargate";
 
-const contractAddress =
-  "xion1fpv5yfe0rsq5w44tcs7puzpq4v5hql9e3tnnr72krferprsc3vdswsede4";
+const contractAddress = "xion1fpv5yfe0rsq5w44tcs7puzpq4v5hql9e3tnnr72krferprsc3vdswsede4";
 
 const treasuryConfig = {
   treasury: "xion1ymwvwwgn546ecxw7k94ll3dnd7gg5rhda07zuckcgkja7m2rqcpsqlu52s",
@@ -31,12 +31,9 @@ export default function Page(): JSX.Element {
   const [count, setCount] = useState<string | null>(null);
   const [myTokenCount, setMyTokenCount] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [executeResult, setExecuteResult] =
-    useState<ExecuteResultOrUndefined>(undefined);
-  const [, setShowModal]: [
-    boolean,
-    React.Dispatch<React.SetStateAction<boolean>>
-  ] = useModal();
+  const [executeResult, setExecuteResult] = useState<ExecuteResultOrUndefined>(undefined);
+  const [, setShowModal]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useModal();
+  const [tokens, setTokens] = useState<string[]>([]);
 
   const blockExplorerUrl = `https://explorer.burnt.com/xion-testnet-1/tx/${executeResult?.transactionHash}`;
 
@@ -65,6 +62,7 @@ export default function Page(): JSX.Element {
   }
 
   async function getMyTokenCount() {
+    console.log("-> getMyTokenCount");
     setLoading(true);
     try {
       if (!queryClient) {
@@ -73,12 +71,12 @@ export default function Page(): JSX.Element {
 
       const response = await queryClient.queryContractSmart(contractAddress, {
         tokens: {
-          owner: account.bech32Address,
-          limit: 100,
+          owner: account.bech32Address
         },
       });
 
-      setMyTokenCount(response.tokens.length.toString());
+      setTokens(response.tokens);
+      setMyTokenCount(response.tokens.length);
     } catch (error) {
       console.error("Error querying contract:", error);
     } finally {
@@ -105,7 +103,6 @@ export default function Page(): JSX.Element {
     console.log(account.bech32Address);
 
     try {
-      // const res = await client?.execute(account.bech32Address, contractAddress, msg, "auto");
       const res = await client?.execute(
         account.bech32Address,
         contractAddress,
@@ -173,7 +170,6 @@ export default function Page(): JSX.Element {
   }, [queryClient]);
 
   const [tokenId, setTokenId] = useState<string>("");
-
   const [recipient, setRecipient] = useState<string>("");
 
   return (
@@ -237,9 +233,9 @@ export default function Page(): JSX.Element {
 
       {myTokenCount !== null && (
         <div className="border-2 border-primary rounded-md p-4 flex flex-row gap-4">
-          <div className="flex flex-row gap-6">
-            <div>My token count:</div>
-            <div>{myTokenCount}</div>
+          <div>
+            <div>My tokens:</div>
+            <div>{tokens.join(", ")}</div>
           </div>
           <div className="flex flex-col gap-4">
             <input
